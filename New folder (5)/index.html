@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            background-color: #9370DB; /* لون بنفسجي مضيء */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #FFF; /* لون خلفية الخلية */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #reset {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #8A2BE2; /* لون بنفسجي داكن */
+            color: #FFF; /* لون النص */
+            cursor: pointer;
+            border: none;
+        }
+
+        #winner {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFF; /* لون النص */
+        }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <button id="reset">إعادة اللعبة</button>
+    <div id="winner"></div>
+
+    <script>
+        const board = document.getElementById('board');
+        const resetButton = document.getElementById('reset');
+        const winnerDisplay = document.getElementById('winner');
+        let currentPlayer = 'X';
+        let winner = null;
+
+        // إنشاء الخلايا وإضافتها إلى اللوحة
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.index = i;
+            cell.addEventListener('click', handleCellClick);
+            board.appendChild(cell);
+        }
+
+        // إضافة حدث النقر على زر إعادة اللعبة
+        resetButton.addEventListener('click', resetGame);
+
+        // دالة للتعامل مع نقرة على الخلية
+        function handleCellClick(event) {
+            const cell = event.target;
+            if (!cell.textContent && !winner) {
+                cell.textContent = currentPlayer;
+                checkWinner();
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        }
+
+        // دالة لفحص إذا كان هناك فائز
+        function checkWinner() {
+            const cells = Array.from(document.querySelectorAll('.cell'));
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            for (const combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
+                    winner = cells[a].textContent;
+                    winnerDisplay.textContent = `اللاعب الفائز: ${winner}`;
+                    return;
+                }
+            }
+
+            // التحقق من التعادل
+            if (cells.every(cell => cell.textContent)) {
+                winnerDisplay.textContent = 'تعادل!';
+            }
+        }
+
+        // دالة إعادة اللعبة
+        function resetGame() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = '';
+            });
+            winner = null;
+            winnerDisplay.textContent = '';
+            currentPlayer = 'X';
+        }
+    </script>
+</body>
+</html>
